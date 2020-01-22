@@ -5,7 +5,7 @@ public class Cache<T> {
 	LinkedList<T> cache1;
 	LinkedList<T> cache2;
 	Scanner fileScan, lineScan;
-	private int c1Size, c2Size, hR1, hR2, nR;
+	private int c1Size, c2Size, hR1, hR2, nR, index;
 	int testNumber;
 	public Cache (int testNumber, int c1Size, String fileName) throws FileNotFoundException
 	{
@@ -47,6 +47,10 @@ public class Cache<T> {
 				T word = (T) token.nextToken();
 				getObject(word);
 				//Call functions for rest of functionality
+				if(nR % 10 == 0)
+				{
+					System.out.println(nR);
+				}
 			}
 		}
 		System.out.println(hR1);
@@ -58,23 +62,12 @@ public class Cache<T> {
 		{
 			
 			int i=0;
-			boolean found = false;
-			while(i < getC1Size() && i <cache1.size() && !found && !cache1.isEmpty() )
-			{
-				if(cache1.get(i).toString().equals(word))
-				{
-					found = true;
-				}
-				else
-				{
-					i++;
-				}
-				
-			}
-			if(found)
+			
+			if(cache1.indexOf(word)!=-1)
 			{
 				hR1++;
-				removeObject(1, i, cache1.get(i));
+				cache1.remove(i);
+				cache1.addFirst(word);
 				
 			}
 			else
@@ -84,46 +77,37 @@ public class Cache<T> {
 		}
 		else if(testNumber == 2)
 		{
-			int i=0;
-			boolean foundC1 = false;
-			boolean foundC2 = false;
-			while(i < getC1Size() && !foundC1 && i <cache1.size() && !cache1.isEmpty())
+			if(cache1.size() < c1Size)
 			{
-				if(cache1.get(i).toString().equals(word))
-				{
-					foundC1 = true;
-				}
-				else
-				{
-					i++;
-				}
-				
-			}
-			if(foundC1)
-			{
-				hR1++;
-				removeObject(1, i, cache1.get(i));
-				removeObject(2, i, cache2.get(i));
-				
+				index = cache1.indexOf(word);
 			}
 			else
 			{
-				while(i < getC2Size() && !foundC2 && i <cache2.size() && !cache2.isEmpty())
+				index = cache1.subList(0, c1Size-1).indexOf(word);
+			}
+			if(index!=-1)
+			{
+				hR1++;
+				cache1.remove(index);
+				cache2.remove(index);
+				cache1.addFirst(word);
+				cache2.addFirst(word);
+			}
+			else
+			{
+				if(cache2.size() < c2Size)
 				{
-					if(cache2.get(i).toString().equals(word))
-					{
-						foundC2 = true;
-						
-					}
-					else
-					{
-						i++;
-					}
+					index = cache2.indexOf(word);
 				}
-				if(foundC2)
+				else
+				{
+					index = cache2.subList(0, c2Size-1).indexOf(word);
+				}
+				if(index!=-1)
 				{
 					hR2++;
-					removeObject(2,i, cache2.get(i));
+					cache2.remove(index);
+					cache2.addFirst(word);
 					cache1.addFirst(word);
 					//System.out.println(word);
 				}
@@ -135,31 +119,7 @@ public class Cache<T> {
 			}
 		}
 	}
-	public void removeObject(int cacheNum, int i, T word)
-	{
-		if(cacheNum == 1)
-		{
-		cache1.remove(i);
-		addObject(word, 1);
-		}
-		if(cacheNum == 2)
-		{
-			cache2.remove(i);
-			addObject(word,2);
-			
-		}
-	}
-	public void addObject(T word, int cacheNum)
-	{
-		if(cacheNum==1)
-		{
-		cache1.addFirst(word);
-		}
-		if (cacheNum == 2)
-		{
-			cache2.addFirst(word);
-		}
-	}
+
 	public void clearCache()
 	{
 		
